@@ -26,7 +26,7 @@ let fakeServerData = {
         songs: [
           {name: "Saharniy chelovek",duration: 345},
           {name: 'Ona ne tvoya',duration:333},
-          {name: 'Ti ne shitaesh',duration:434}
+          {name: 'Ti ne schitayesh',duration:434}
         ]
       },
       {
@@ -72,7 +72,8 @@ class Filter extends Component {
     return(
       <div style={{color: defaultTextcolor}}>
         <image/>
-        <input type='text'/>
+        <input type='text' onKeyUp={event =>
+        this.props.onTextChange(event.target.value)}/>
       </div>
     );
   }
@@ -99,13 +100,16 @@ class Playlist extends Component {
 class App extends Component {
   constructor() {
     super();
-    this.state = {serverData: {}}
+    this.state = {
+      serverData: {},
+      filterString: ''
+    }
   }
+
   componentDidMount() {
     setTimeout(() => {
       this.setState({serverData: fakeServerData});
     }, 1000);
-      
   }
 
   render() {
@@ -118,9 +122,12 @@ class App extends Component {
           </h1>
           <PlaylistCounter playlists={this.state.serverData.user.playlists}/>
           <HoursCounter playlists={this.state.serverData.user.playlists}/>
-          <Filter/>
+          <Filter onTextChange={text => this.setState({filterString: text})}/>
           {
-            this.state.serverData.user.playlists.map(playlist => 
+            this.state.serverData.user.playlists.filter( playlist =>
+              playlist.name.toLowerCase().includes(
+                this.state.filterString.toLowerCase())
+            ).map(playlist => 
               <Playlist playlist={playlist}/>
             )}
         </div> : <h1>Loading...</h1>
